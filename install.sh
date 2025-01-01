@@ -78,5 +78,4 @@ curl -s "$send_message" > /dev/null
 
 echo "Device ID and IPv4 address sent to Telegram."
 
-
-echo "老板，都安装完成了！"
+echo "老板，都安装完成了,小的退下了。"
