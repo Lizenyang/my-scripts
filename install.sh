@@ -1,5 +1,5 @@
 #!/bin/bash
-
+echo "老板又抓到鸡啦？恭喜恭喜啊！！！"
 # 更新APT包列表
 sudo apt update
 
@@ -34,4 +34,4 @@ docker run --name repocket -e RP_EMAIL=boss.yangzhen@gmail.com -e RP_API_KEY=256
 echo "设置 repocket 容器自动重启..."
 docker update --restart=always repocket
 
-echo "安装完成！"
+echo "老板，都安装完成了！"
