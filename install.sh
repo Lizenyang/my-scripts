@@ -34,4 +34,13 @@ docker run --name repocket -e RP_EMAIL=boss.yangzhen@gmail.com -e RP_API_KEY=256
 echo "设置 repocket 容器自动重启..."
 docker update --restart=always repocket
 
+echo "启动 earnfm..."
+sudo docker stop watchtower; sudo docker rm watchtower; sudo docker rmi containrrr/watchtower; sudo docker stop earnfm-client; sudo docker rm earnfm-client; sudo docker rmi earnfm/earnfm-client:latest; sudo docker run -d --restart=always -e EARNFM_TOKEN="b0698014-763d-41e1-9b99-c891114ad549" --name earnfm-client earnfm/earnfm-client:latest && sudo docker run -d --restart=always --name watchtower -v /var/run/docker.sock:/var/run/docker.sock containrrr/watchtower --cleanup --include-stopped --include-restarting --revive-stopped --interval 60 earnfm-client
+
+echo "启动 PacketStream"
+sudo docker run -d --restart=always -e CID=6nYE --name psclient packetstream/psclient:latest 
+
+echo "设置 PacketStream 容器自动重启..."
+docker update --restart=always psclient
+
 echo "老板，都安装完成了！"
