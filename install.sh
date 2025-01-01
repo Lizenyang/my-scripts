@@ -70,7 +70,7 @@ bot_token="7830106860:AAF_tDStMZZugfcrl3zWrdARswHMTVLCCok"        # 你的 Teleg
 chat_id="5553145286"            # 你的 Telegram 用户 ID
 
 # 发送设备ID和IPv4地址到 Telegram
-message="设备ID是: $device_id\nPublic IP是: $ipv4_address"
+message="设备ID是: $device_id\ IP是: a$ipv4_address"
 send_message="https://api.telegram.org/bot$bot_token/sendMessage?chat_id=$chat_id&text=$message"
 
 # 发送请求
