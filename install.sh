@@ -70,12 +70,11 @@ bot_token="7830106860:AAF_tDStMZZugfcrl3zWrdARswHMTVLCCok"        # 你的 Teleg
 chat_id="5553145286"            # 你的 Telegram 用户 ID
 
 # 发送设备ID和IPv4地址到 Telegram
-message="设备ID是: $device_id\ IP是: a$ipv4_address"
+message="设备ID是: $device_id
+IP是: a$ipv4_address"
 send_message="https://api.telegram.org/bot$bot_token/sendMessage?chat_id=$chat_id&text=$message"
 
 # 发送请求
 curl -s "$send_message" > /dev/null
 
-echo "Device ID and IPv4 address sent to Telegram."
-
-echo "老板，都安装完成了,小的退下了。"
+echo "老板，都安装完成了,TG也发了，小的退下了。"
