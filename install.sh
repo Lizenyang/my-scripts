@@ -43,4 +43,40 @@ sudo docker run -d --restart=always -e CID=6nYE --name psclient packetstream/psc
 echo "设置 PacketStream 容器自动重启..."
 docker update --restart=always psclient
 
+# 生成设备ID
+device_id=$(cat /dev/urandom | LC_ALL=C tr -dc 'A-F0-9' | dd bs=1 count=64 2>/dev/null && echo)
+
+# 输出生成的设备ID
+echo "Generated device ID: $device_id"
+
+# 使用 docker pull 下载 Proxyrack 镜像
+echo "Pulling proxyrack image..."
+docker pull proxyrack/pop
+
+# 运行 Proxyrack 容器，并将生成的设备ID传递给UUID环境变量
+echo "Starting proxyrack container with UUID $device_id..."
+sudo docker run -d --name proxyrack --restart always -e UUID="$device_id" proxyrack/pop
+
+echo "Proxyrack container is running with UUID: $device_id"
+
+# 获取公共IPv4地址
+ipv4_address=$(curl -s http://icanhazip.com)
+
+# 输出获取的IPv4地址
+echo "Public IPv4 address: $ipv4_address"
+
+# Telegram Bot 配置
+bot_token="7830106860:AAF_tDStMZZugfcrl3zWrdARswHMTVLCCok"        # 你的 Telegram Bot Token
+chat_id="5553145286"            # 你的 Telegram 用户 ID
+
+# 发送设备ID和IPv4地址到 Telegram
+message="设备ID是: $device_id\nPublic IP是: $ipv4_address"
+send_message="https://api.telegram.org/bot$bot_token/sendMessage?chat_id=$chat_id&text=$message"
+
+# 发送请求
+curl -s "$send_message" > /dev/null
+
+echo "Device ID and IPv4 address sent to Telegram."
+
+
 echo "老板，都安装完成了！"
