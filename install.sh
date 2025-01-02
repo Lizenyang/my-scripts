@@ -1,12 +1,45 @@
 #!/bin/bash
+# 定义颜色
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+YELLOW='\033[0;33m'
+BLUE='\033[0;34m'
+MAGENTA='\033[0;35m'
+CYAN='\033[0;36m'
+NC='\033[0m' # 无颜色
+# 定义彩色输出函数
+color_echo() {
+  local color=$1
+  shift
+  echo -e "${color}$*${NC}"
+}
 #------------------------------------------------------------------------------------------------------------
 echo "🎉🎉🎉恭喜老板喜提新机🎉🎉🎉"
 
 # 更新APT包列表
 apt update -y  && apt install -y curl
-echo "更新完成"
-sleep 2
+echo -e "${GREEN}更新完成"
+#------------------------------------------------------------------------------------------------------------
 
+# 输出绿色信息
+echo -e "${CYAN}正在设置 IPv4 优先...${NC}"
+
+# 检查并设置 sysctl 配置
+if grep -q "precedence ::ffff:0:0/96 100" /etc/gai.conf; then
+    echo -e "${GREEN}IPv4 优先已设置，无需重复配置。${NC}"
+else
+    echo -e "${GREEN}配置 IPv4 优先中...${NC}"
+    sudo sed -i '/^#precedence ::ffff:0:0\/96 100/s/^#//' /etc/gai.conf
+    echo -e "${GREEN}IPv4 优先设置完成。${NC}"
+fi
+
+# 检查是否成功修改
+if grep -q "precedence ::ffff:0:0/96 100" /etc/gai.conf; then
+    echo -e "${GREEN}验证成功：IPv4 优先已启用！${NC}"
+else
+    echo -e "${RED}错误：IPv4 优先设置失败，请检查 gai.conf 文件权限。${NC}"
+    exit 1
+fi
 #------------------------------------------------------------------------------------------------------------
 # 检查是否已配置交换内存
 if free | grep -q "Swap"; then
