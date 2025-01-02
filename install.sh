@@ -147,10 +147,10 @@ echo "Proxyrack container is running with UUID: $device_id"
 echo "Proxyrack启动完成"
 sleep 2
 
-###### 蜜罐
+###### Honeygain
 #docker run honeygain/honeygain -tou-accept -email boss.yangzhen@gmail.com -pass honeygain@931101 -device $(hostname -I | awk '{print $1}')
 docker run -d honeygain/honeygain -tou-accept -email boss.yangzhen@gmail.com -pass honeygain@931101 -device $(hostname -I | awk '{print $1}')
-echo "蜜罐启动完成"
+echo "Honeygain启动完成"
 sleep 2
 
 ####### 运行 EarnApp 安装脚本并提取 https:// 链接
