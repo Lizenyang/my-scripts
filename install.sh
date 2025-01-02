@@ -2,6 +2,8 @@
 echo "老板又抓到鸡啦？恭喜恭喜啊！！！"
 # 更新APT包列表
 sudo apt update
+echo "更新完成"
+sleep 2
 
 echo "关闭所有防火墙规则"
 systemctl stop firewalld.service
@@ -9,10 +11,19 @@ sudo iptables -P INPUT ACCEPT
 sudo iptables -P FORWARD ACCEPT
 sudo iptables -P OUTPUT ACCEPT
 sudo iptables -F
-
+echo "防火墙已关闭"
+sleep 2
 # 安装 unzip
 echo "安装 unzip..."
 sudo apt install -y unzip
+echo "unzip已安装"
+sleep 2
+
+# 安装jq
+sudo apt update && sudo apt install -y jq
+echo "已安装"
+sleep 2
+
 
 # 安装并执行agent.sh脚本
 #echo "安装并执行 agent.sh..."
@@ -22,6 +33,8 @@ sudo apt install -y unzip
 # 安装 Docker
 echo "安装 Docker..."
 sudo apt install -y docker.io
+echo "docker已安装"
+sleep 2
 
 # 安装 Docker Compose
 echo "安装 Docker Compose..."
@@ -38,6 +51,8 @@ docker update --restart=always traa
 ## 执行 repocket 命令 
 echo "启动 repocket..."
 docker run --name repocket -e RP_EMAIL=boss.yangzhen@gmail.com -e RP_API_KEY=2567fdd2-7ca8-4980-ad33-0038676b95d2 -d --restart=always repocket/repocket
+echo "repocket启动完成"
+sleep 2
 
 echo "设置 repocket 容器自动重启..."
 docker update --restart=always repocket
@@ -45,6 +60,8 @@ docker update --restart=always repocket
 ## 执行 earnfm 命令 
 echo "启动 earnfm..."
 sudo docker stop watchtower; sudo docker rm watchtower; sudo docker rmi containrrr/watchtower; sudo docker stop earnfm-client; sudo docker rm earnfm-client; sudo docker rmi earnfm/earnfm-client:latest; sudo docker run -d --restart=always -e EARNFM_TOKEN="b0698014-763d-41e1-9b99-c891114ad549" --name earnfm-client earnfm/earnfm-client:latest && sudo docker run -d --restart=always --name watchtower -v /var/run/docker.sock:/var/run/docker.sock containrrr/watchtower --cleanup --include-stopped --include-restarting --revive-stopped --interval 60 earnfm-client
+echo "earnfm启动完成"
+sleep 2
 
 ### 执行 earnfm 命令
 echo "启动 PacketStream"
@@ -52,11 +69,15 @@ sudo docker run -d --restart=always -e CID=6nYE --name psclient packetstream/psc
 
 echo "设置 PacketStream 容器自动重启..."
 docker update --restart=always psclient
+echo "PacketStream启动完成"
+sleep 2
 
 #### 执行 mystnodes 命令
 echo "启动 mystnodes"
 docker pull mysteriumnetwork/myst && 
 docker run --log-opt max-size=10m --cap-add NET_ADMIN -d -p 4449:4449 --name myst -v myst-data:/var/lib/mysterium-node --restart unless-stopped mysteriumnetwork/myst:latest service --agreed-terms-and-conditions
+echo "mystnodes启动完成"
+sleep 2
 
 ##### 执行 Proxyrack 命令
 # 生成设备ID
@@ -73,15 +94,20 @@ docker pull proxyrack/pop
 # 运行 Proxyrack 容器，并将生成的设备ID传递给UUID环境变量
 echo "Starting proxyrack container with UUID $device_id..."
 sudo docker run -d --name proxyrack --restart always -e UUID="$device_id" proxyrack/pop
-
 echo "Proxyrack container is running with UUID: $device_id"
+echo "Proxyrack启动完成"
+sleep 2
 
 ###### 蜜罐
 #docker run honeygain/honeygain -tou-accept -email boss.yangzhen@gmail.com -pass honeygain@931101 -device $(hostname -I | awk '{print $1}')
 docker run -d honeygain/honeygain -tou-accept -email boss.yangzhen@gmail.com -pass honeygain@931101 -device $(hostname -I | awk '{print $1}')
+echo "蜜罐启动完成"
+sleep 2
 
 ####### 运行 EarnApp 安装脚本并提取 https:// 链接
 https_link=$(wget -qO- https://brightdata.com/static/earnapp/install.sh | sudo bash -s -- -y 2>&1 | grep -o 'https://[^ ]*')
+echo "EarnApp启动完成"
+sleep 2
 
 # 获取公共IPv4地址
 ipv4_address=$(curl -s http://icanhazip.com)
