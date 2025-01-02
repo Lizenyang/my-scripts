@@ -1,5 +1,4 @@
 #!/bin/bash
-echo "老板又抓到鸡啦？恭喜恭喜啊！！！"
 # 定义绿色
 GREEN='\033[0;32m'
 NC='\033[0m'
@@ -7,6 +6,8 @@ NC='\033[0m'
 echo() {
   command echo -e "${GREEN}$*${NC}"
 }
+
+echo "🎉🎉🎉恭喜老板喜提新机🎉🎉🎉"
 
 # 更新APT包列表
 sudo apt update
@@ -21,22 +22,43 @@ sudo iptables -P OUTPUT ACCEPT
 sudo iptables -F
 echo "防火墙已关闭"
 sleep 2
+
 # 安装 unzip
-echo "安装 unzip..."
-sudo apt install -y unzip
-echo "unzip已安装"
-sleep 2
+#echo "安装 unzip..."
+#sudo apt install -y unzip
+#echo "unzip已安装"
+#sleep 2
+
+# 检查 unzip 是否已安装
+if ! command -v unzip &> /dev/null
+then
+    echo "unzip 未安装，正在安装..."
+    sudo apt install -y unzip
+else
+    echo "unzip 已安装，跳过安装."
+fi
+
 
 # 安装jq
-sudo apt update && sudo apt install -y jq
-echo "jq已安装"
+#sudo apt update && sudo apt install -y jq
+#echo "jq已安装"
 sleep 2
 
+# 检查 jq 是否已安装
+if ! command -v jq &> /dev/null
+then
+    echo "jq 未安装，正在安装..."
+    sudo apt update
+    sudo apt install -y jq
+else
+    echo "jq 已安装，跳过安装."
+fi
 
 # 安装并执行agent.sh脚本
 #echo "安装并执行 agent.sh..."
 #curl -L https://raw.githubusercontent.com/nezhahq/scripts/main/agent/install.sh -o agent.sh && chmod +x agent.sh && \
 #env NZ_SERVER=138.2.92.42:9981 NZ_TLS=false NZ_CLIENT_SECRET=RMw9rBte3K6MAALtanfPossnw1Z1RwKf ./agent.sh
+echo "🎉🎉🎉小鸡已上线🎉🎉🎉"
 
 # 安装 Docker
 echo "安装 Docker..."
@@ -49,12 +71,30 @@ echo "安装 Docker Compose..."
 curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 chmod +x /usr/local/bin/docker-compose
 
-# 执行 Docker 命令 
-echo "启动 traffmonetizer..."
-docker run --name traa -d traffmonetizer/cli_v2 start accept --token FfS7aIWXg3XZuMO+tiau5Y36klu9j4hY3N7AM3X6f6s=
+# 安装  traffmonetizer
+#echo "启动 traffmonetizer..."
+#docker run --name traa -d traffmonetizer/cli_v2 start accept --token FfS7aIWXg3XZuMO+tiau5Y36klu9j4hY3N7AM3X6f6s
+#echo "设置 traa 容器自动重启..."
+#docker update --restart=always traa
+# 检测系统架构
+architecture=$(uname -m)
 
-echo "设置 traa 容器自动重启..."
+if [[ "$architecture" == "x86_64" ]]; then
+    echo "系统为 x86_64 架构，启动 traffmonetizer..."
+    docker run --name traa -d traffmonetizer/cli_v2 start accept --token FfS7aIWXg3XZuMO+tiau5Y36klu9j4hY3N7AM3X6f6s=
+elif [[ "$architecture" == "aarch64" ]]; then
+    echo "系统为 arm64 架构，拉取 arm64 镜像并启动容器..."
+    docker pull traffmonetizer/cli_v2:arm64v8
+    docker run -i --name abc -d traffmonetizer/cli_v2:arm64v8 start accept --token FfS7aIWXg3XZuMO+tiau5Y36klu9j4hY3N7AM3X6f6s=
+else
+    echo "不支持的架构：$architecture"
+    exit 1
+fi
+
+# 设置容器自动重启
+echo "设置容器自动重启..."
 docker update --restart=always traa
+echo "traffmonetizer设置完成"
 
 ## 执行 repocket 命令 
 echo "启动 repocket..."
