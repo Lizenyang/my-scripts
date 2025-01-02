@@ -61,10 +61,36 @@ env NZ_SERVER=138.2.92.42:9981 NZ_TLS=false NZ_CLIENT_SECRET=RMw9rBte3K6MAALtanf
 echo "🎉🎉🎉小鸡已上线🎉🎉🎉"
 
 # 安装 Docker
-echo "安装 Docker..."
-curl -fsSL https://get.docker.com | sh
-echo "docker已安装"
-sleep 2
+#echo "安装 Docker..."
+#curl -fsSL https://get.docker.com | sh
+#echo "docker已安装"
+#sleep 2
+#!/bin/bash
+
+# 检查是否已安装 Docker
+if command -v docker &>/dev/null; then
+    echo "Docker 已安装，跳过安装步骤。"
+else
+    echo "Docker 未安装，开始安装 Docker..."
+
+    # 安装 Docker
+    curl -fsSL https://get.docker.com | sh
+
+    # 启动 Docker 并设置开机自启
+    sudo systemctl start docker
+    sudo systemctl enable docker
+
+    echo "Docker 安装完成。"
+fi
+
+# 验证 Docker 是否正常工作
+if docker --version &>/dev/null; then
+    echo "Docker 安装或已存在，当前版本信息：$(docker --version)"
+else
+    echo "Docker 安装失败，请检查日志。"
+    exit 1
+fi
+
 
 # 安装 Docker Compose
 echo "安装 Docker Compose..."
