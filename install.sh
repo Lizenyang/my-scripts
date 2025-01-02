@@ -14,12 +14,50 @@ sudo apt update
 echo "更新完成"
 sleep 2
 
+
+# 检查是否已配置交换内存
+if free | grep -q "Swap"; then
+    swap_size=$(free -m | awk '/Swap/ {print $2}')
+    if [ "$swap_size" -eq 0 ]; then
+        echo "检测到 Swap 已设置，但大小为 0，重新设置为 1GB..."
+        sudo swapoff -a
+        sudo dd if=/dev/zero of=/swapfile bs=1M count=1024
+        sudo chmod 600 /swapfile
+        sudo mkswap /swapfile
+        sudo swapon /swapfile
+    else
+        echo "检测到 Swap 已设置，大小为 ${swap_size}MB，跳过设置步骤。"
+    fi
+else
+    echo "未检测到 Swap，设置为 1GB..."
+    sudo dd if=/dev/zero of=/swapfile bs=1M count=1024
+    sudo chmod 600 /swapfile
+    sudo mkswap /swapfile
+    sudo swapon /swapfile
+fi
+
+# 确保 Swap 永久生效
+if ! grep -q "/swapfile" /etc/fstab; then
+    echo "/swapfile none swap sw 0 0" | sudo tee -a /etc/fstab
+    echo "Swap 已设置为永久生效。"
+fi
+
+# 显示当前 Swap 状态
+echo "当前 Swap 配置："
+free -h
+sleep 3
+
 echo "关闭所有防火墙规则"
 systemctl stop firewalld.service
+sleep 1
 sudo iptables -P INPUT ACCEPT
+sleep 1
 sudo iptables -P FORWARD ACCEPT
+sleep 1
 sudo iptables -P OUTPUT ACCEPT
+sleep 1
 sudo iptables -F
+sleep 1
 echo "防火墙已关闭"
 sleep 2
 
@@ -54,11 +92,10 @@ else
     echo "jq 已安装，跳过安装."
 fi
 
-# 安装并执行agent.sh脚本
-echo "安装并执行 agent.sh..."
-curl -L https://raw.githubusercontent.com/nezhahq/scripts/main/agent/install.sh -o agent.sh && chmod +x agent.sh && \
-env NZ_SERVER=138.2.92.42:9981 NZ_TLS=false NZ_CLIENT_SECRET=RMw9rBte3K6MAALtanfPossnw1Z1RwKf ./agent.sh
-echo "🎉🎉🎉小鸡已上线🎉🎉🎉"
+#echo "安装并执行 agent.sh..."
+#curl -L https://raw.githubusercontent.com/nezhahq/scripts/main/agent/install.sh -o agent.sh && chmod +x agent.sh && \
+#env NZ_SERVER=138.2.92.42:9981 NZ_TLS=false NZ_CLIENT_SECRET=RMw9rBte3K6MAALtanfPossnw1Z1RwKf ./agent.sh
+#echo "🎉🎉🎉小鸡已上线🎉🎉🎉"
 
 # 安装 Docker
 #echo "安装 Docker..."
