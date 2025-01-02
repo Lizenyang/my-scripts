@@ -10,7 +10,7 @@ echo() {
 echo "🎉🎉🎉恭喜老板喜提新机🎉🎉🎉"
 
 # 更新APT包列表
-sudo apt update -y
+apt update -y  && apt install -y curl
 echo "更新完成"
 sleep 2
 
