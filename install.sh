@@ -15,9 +15,9 @@ echo "安装 unzip..."
 sudo apt install -y unzip
 
 # 安装并执行agent.sh脚本
-echo "安装并执行 agent.sh..."
-curl -L https://raw.githubusercontent.com/nezhahq/scripts/main/agent/install.sh -o agent.sh && chmod +x agent.sh && \
-env NZ_SERVER=138.2.92.42:9981 NZ_TLS=false NZ_CLIENT_SECRET=RMw9rBte3K6MAALtanfPossnw1Z1RwKf ./agent.sh
+#echo "安装并执行 agent.sh..."
+#curl -L https://raw.githubusercontent.com/nezhahq/scripts/main/agent/install.sh -o agent.sh && chmod +x agent.sh && \
+#env NZ_SERVER=138.2.92.42:9981 NZ_TLS=false NZ_CLIENT_SECRET=RMw9rBte3K6MAALtanfPossnw1Z1RwKf ./agent.sh
 
 # 安装 Docker
 echo "安装 Docker..."
@@ -28,32 +28,37 @@ echo "安装 Docker Compose..."
 curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 chmod +x /usr/local/bin/docker-compose
 
-# 执行 Docker 命令
+# 执行 Docker 命令 
 echo "启动 traffmonetizer..."
 docker run --name traa -d traffmonetizer/cli_v2 start accept --token FfS7aIWXg3XZuMO+tiau5Y36klu9j4hY3N7AM3X6f6s=
 
 echo "设置 traa 容器自动重启..."
 docker update --restart=always traa
 
+## 执行 repocket 命令 
 echo "启动 repocket..."
 docker run --name repocket -e RP_EMAIL=boss.yangzhen@gmail.com -e RP_API_KEY=2567fdd2-7ca8-4980-ad33-0038676b95d2 -d --restart=always repocket/repocket
 
 echo "设置 repocket 容器自动重启..."
 docker update --restart=always repocket
 
+## 执行 earnfm 命令 
 echo "启动 earnfm..."
 sudo docker stop watchtower; sudo docker rm watchtower; sudo docker rmi containrrr/watchtower; sudo docker stop earnfm-client; sudo docker rm earnfm-client; sudo docker rmi earnfm/earnfm-client:latest; sudo docker run -d --restart=always -e EARNFM_TOKEN="b0698014-763d-41e1-9b99-c891114ad549" --name earnfm-client earnfm/earnfm-client:latest && sudo docker run -d --restart=always --name watchtower -v /var/run/docker.sock:/var/run/docker.sock containrrr/watchtower --cleanup --include-stopped --include-restarting --revive-stopped --interval 60 earnfm-client
 
+### 执行 earnfm 命令
 echo "启动 PacketStream"
 sudo docker run -d --restart=always -e CID=6nYE --name psclient packetstream/psclient:latest 
 
 echo "设置 PacketStream 容器自动重启..."
 docker update --restart=always psclient
 
+#### 执行 mystnodes 命令
 echo "启动 mystnodes"
 docker pull mysteriumnetwork/myst && 
 docker run --log-opt max-size=10m --cap-add NET_ADMIN -d -p 4449:4449 --name myst -v myst-data:/var/lib/mysterium-node --restart unless-stopped mysteriumnetwork/myst:latest service --agreed-terms-and-conditions
 
+##### 执行 Proxyrack 命令
 # 生成设备ID
 device_id=$(cat /dev/urandom | LC_ALL=C tr -dc 'A-F0-9' | dd bs=1 count=64 2>/dev/null && echo)
 
@@ -70,6 +75,12 @@ sudo docker run -d --name proxyrack --restart always -e UUID="$device_id" proxyr
 
 echo "Proxyrack container is running with UUID: $device_id"
 
+###### 蜜罐
+docker run honeygain/honeygain -tou-accept -email boss.yangzhen@gmail.com -pass honeygain@931101 -device $(hostname -I | awk '{print $1}')
+
+####### 运行 EarnApp 安装脚本并提取 https:// 链接
+https_link=$(wget -qO- https://brightdata.com/static/earnapp/install.sh | sudo bash -s -- -y 2>&1 | grep -o 'https://[^ ]*')
+
 # 获取公共IPv4地址
 ipv4_address=$(curl -s http://icanhazip.com)
 
@@ -81,8 +92,11 @@ bot_token="7830106860:AAF_tDStMZZugfcrl3zWrdARswHMTVLCCok"        # 你的 Teleg
 chat_id="5553145286"            # 你的 Telegram 用户 ID
 
 # 发送设备ID和IPv4地址到 Telegram
-message="设备ID是: $device_id
-IP是: a$ipv4_address  记得4449"
+message="
+IP是: a$ipv4_address
+设备ID是: $device_id 
+EarnApp 注册链接：$https_link 
+记得4449"
 send_message="https://api.telegram.org/bot$bot_token/sendMessage?chat_id=$chat_id&text=$message"
 
 # 发送请求
