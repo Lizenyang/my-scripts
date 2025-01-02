@@ -1,9 +1,11 @@
 #!/bin/bash
 # 定义绿色
 GREEN='\033[0;32m'
-NC='\033[0m'
-# 覆盖 echo 命令，加入颜色
-echo -e "${GREEN}$*${NC}"
+NC='\033[0m' # 无颜色
+# 覆盖 echo 命令，所有输出均为绿色
+echo() {
+  echo -e "${GREEN}$*${NC}"
+}
 #------------------------------------------------------------------------------------------------------------
 echo "🎉🎉🎉恭喜老板喜提新机🎉🎉🎉"
 
@@ -182,7 +184,7 @@ echo "下载 Proxyrack 镜像"
 docker pull proxyrack/pop
 
 # 运行 Proxyrack 容器，并将生成的设备ID传递给UUID环境变量
-sudo docker run -d --name proxyrack --restart always -e UUID="$device_id" proxyrack/pop
+sudo docker run -d --name proxyrack --restart always -e UUID="echo "$device_id"" proxyrack/pop
 echo "Proxyrack container is running with UUID: $device_id"
 echo "Proxyrack启动完成"
 sleep 2
