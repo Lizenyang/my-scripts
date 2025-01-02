@@ -97,9 +97,13 @@ chat_id="5553145286"            # 你的 Telegram 用户 ID
 message="IP+4449: $ipv4_address
 设备ID是: $device_id 
 EarnApp 注册链接：$https_link"
-send_message="https://api.telegram.org/bot$bot_token/sendMessage?chat_id=$chat_id&text=$message"
+# 对消息进行 URL 编码
+encoded_message=$(echo "$message" | jq -sRr @uri)
+#send_message="https://api.telegram.org/bot$bot_token/sendMessage?chat_id=$chat_id&text=$message"
+send_message_url="https://api.telegram.org/bot$bot_token/sendMessage?chat_id=$chat_id&text=$encoded_message"
 
 # 发送请求
 curl -s "$send_message" > /dev/null
+#response=$(curl -s "$send_message_url")
 
 echo "老板，都安装完成了,TG也发了，小的退下了。"
