@@ -92,11 +92,9 @@ bot_token="7830106860:AAF_tDStMZZugfcrl3zWrdARswHMTVLCCok"        # 你的 Teleg
 chat_id="5553145286"            # 你的 Telegram 用户 ID
 
 # 发送设备ID和IPv4地址到 Telegram
-message="
-IP是: a$ipv4_address
+message="IP+4449: $ipv4_address
 设备ID是: $device_id 
-EarnApp 注册链接：$https_link 
-记得4449"
+EarnApp 注册链接：$https_link"
 send_message="https://api.telegram.org/bot$bot_token/sendMessage?chat_id=$chat_id&text=$message"
 
 # 发送请求
