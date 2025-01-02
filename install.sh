@@ -62,7 +62,7 @@ echo "🎉🎉🎉小鸡已上线🎉🎉🎉"
 
 # 安装 Docker
 echo "安装 Docker..."
-sudo apt install -y docker.io
+curl -fsSL https://get.docker.com | sh
 echo "docker已安装"
 sleep 2
 
