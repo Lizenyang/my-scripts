@@ -8,21 +8,46 @@ echo -e "${GREEN}$*${NC}"
 echo "🎉🎉🎉恭喜老板喜提新机🎉🎉🎉"
 
 # 更新APT包列表
-sudo apt update
+sudo apt update -y
 echo "更新完成"
 sleep 2
 
 #------------------------------------------------------------------------------------------------------------
 
 # 检查是否已配置交换内存
-if [ "$swap_size" -lt 1024 ]; then
-    echo "检测到 Swap 大小不足 1GB，重新设置为 1GB..."
-    sudo swapoff -a
-    sudo fallocate -l 1G /swapfile
+#!/bin/bash
+
+# 检查是否已配置交换内存
+if free | grep -q "Swap"; then
+    swap_size=$(free -m | awk '/Swap/ {print $2}')
+    if [ "$swap_size" -eq 0 ]; then
+        echo "检测到 Swap 已设置，但大小为 0，重新设置为 1GB..."
+        sudo swapoff -a
+        sudo dd if=/dev/zero of=/swapfile bs=1M count=1024
+        sudo chmod 600 /swapfile
+        sudo mkswap /swapfile
+        sudo swapon /swapfile
+    else
+        echo "检测到 Swap 已设置，大小为 ${swap_size}MB，跳过设置步骤。"
+    fi
+else
+    echo "未检测到 Swap，设置为 1GB..."
+    sudo dd if=/dev/zero of=/swapfile bs=1M count=1024
     sudo chmod 600 /swapfile
     sudo mkswap /swapfile
     sudo swapon /swapfile
-fi  
+fi
+
+# 确保 Swap 永久生效
+if ! grep -q "/swapfile" /etc/fstab; then
+    echo "/swapfile none swap sw 0 0" | sudo tee -a /etc/fstab
+    echo "Swap 已设置为永久生效。"
+fi
+
+# 显示当前 Swap 状态
+echo "当前 Swap 配置："
+free -h
+
 #------------------------------------------------------------------------------------------------------------
 echo "关闭不必要的防火墙规则..."
 sudo iptables -P INPUT ACCEPT
