@@ -95,6 +95,7 @@ fi
 echo "设置容器自动重启..."
 docker update --restart=always traa
 echo "traffmonetizer设置完成"
+sleep 3
 
 ## 执行 repocket 命令 
 echo "启动 repocket..."
