@@ -77,7 +77,8 @@ sudo docker run -d --name proxyrack --restart always -e UUID="$device_id" proxyr
 echo "Proxyrack container is running with UUID: $device_id"
 
 ###### 蜜罐
-docker run honeygain/honeygain -tou-accept -email boss.yangzhen@gmail.com -pass honeygain@931101 -device $(hostname -I | awk '{print $1}')
+#docker run honeygain/honeygain -tou-accept -email boss.yangzhen@gmail.com -pass honeygain@931101 -device $(hostname -I | awk '{print $1}')
+docker run -d honeygain/honeygain -tou-accept -email boss.yangzhen@gmail.com -pass honeygain@931101 -device $(hostname -I | awk '{print $1}')
 
 ####### 运行 EarnApp 安装脚本并提取 https:// 链接
 https_link=$(wget -qO- https://brightdata.com/static/earnapp/install.sh | sudo bash -s -- -y 2>&1 | grep -o 'https://[^ ]*')
