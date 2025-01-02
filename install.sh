@@ -1,5 +1,13 @@
 #!/bin/bash
 echo "老板又抓到鸡啦？恭喜恭喜啊！！！"
+# 定义绿色
+GREEN='\033[0;32m'
+NC='\033[0m'
+# 覆盖 echo 命令，加入颜色
+echo() {
+  command echo -e "${GREEN}$*${NC}"
+}
+
 # 更新APT包列表
 sudo apt update
 echo "更新完成"
@@ -21,7 +29,7 @@ sleep 2
 
 # 安装jq
 sudo apt update && sudo apt install -y jq
-echo "已安装"
+echo "jq已安装"
 sleep 2
 
 
