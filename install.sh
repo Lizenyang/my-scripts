@@ -130,7 +130,6 @@ echo "earnfm启动完成"
 sleep 2
 #------------------------------------------------------------------------------------------------------------
 
-### 执行 earnfm 命令
 echo "启动 PacketStream"
 sudo docker run -d --restart=always -e CID=6nYE --name psclient packetstream/psclient:latest 
 
@@ -141,9 +140,9 @@ sleep 2
 #------------------------------------------------------------------------------------------------------------
 
 #### 执行 mystnodes 命令
-echo "启动 mystnodes"
+echo "启动 Mystnodes"
 docker pull mysteriumnetwork/myst && 
-docker run --log-opt max-size=10m --cap-add NET_ADMIN -d -p 4449:4449 --name myst -v myst-data:/var/lib/mysterium-node --restart unless-stopped mysteriumnetwork/myst:latest service --agreed-terms-and-conditions
+docker run --log-opt max-size=10m --cap-add NET_ADMIN -d -p 4449:4449 --name mystnodes -v myst-data:/var/lib/mysterium-node --restart unless-stopped mysteriumnetwork/myst:latest service --agreed-terms-and-conditions
 echo "mystnodes启动完成"
 sleep 2
 #------------------------------------------------------------------------------------------------------------
@@ -166,6 +165,7 @@ sleep 2
 #------------------------------------------------------------------------------------------------------------
 ###### Honeygain
 #docker run honeygain/honeygain -tou-accept -email boss.yangzhen@gmail.com -pass honeygain@931101 -device $(hostname -I | awk '{print $1}')
+docker pull honeygain/honeygain
 docker run -d honeygain/honeygain -tou-accept -email boss.yangzhen@gmail.com -pass honeygain@931101 -device $(hostname -I | awk '{print $1}')
 echo "Honeygain启动完成"
 sleep 2
