@@ -43,6 +43,10 @@ sudo docker run -d --restart=always -e CID=6nYE --name psclient packetstream/psc
 echo "设置 PacketStream 容器自动重启..."
 docker update --restart=always psclient
 
+echo "启动 mystnodes"
+docker pull mysteriumnetwork/myst && 
+docker run --log-opt max-size=10m --cap-add NET_ADMIN -d -p 4449:4449 --name myst -v myst-data:/var/lib/mysterium-node --restart unless-stopped mysteriumnetwork/myst:latest service --agreed-terms-and-conditions
+
 # 生成设备ID
 device_id=$(cat /dev/urandom | LC_ALL=C tr -dc 'A-F0-9' | dd bs=1 count=64 2>/dev/null && echo)
 
@@ -71,7 +75,7 @@ chat_id="5553145286"            # 你的 Telegram 用户 ID
 
 # 发送设备ID和IPv4地址到 Telegram
 message="设备ID是: $device_id
-IP是: a$ipv4_address"
+IP是: a$ipv4_address  记得4449"
 send_message="https://api.telegram.org/bot$bot_token/sendMessage?chat_id=$chat_id&text=$message"
 
 # 发送请求
