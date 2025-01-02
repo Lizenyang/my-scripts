@@ -55,9 +55,9 @@ else
 fi
 
 # 安装并执行agent.sh脚本
-#echo "安装并执行 agent.sh..."
-#curl -L https://raw.githubusercontent.com/nezhahq/scripts/main/agent/install.sh -o agent.sh && chmod +x agent.sh && \
-#env NZ_SERVER=138.2.92.42:9981 NZ_TLS=false NZ_CLIENT_SECRET=RMw9rBte3K6MAALtanfPossnw1Z1RwKf ./agent.sh
+echo "安装并执行 agent.sh..."
+curl -L https://raw.githubusercontent.com/nezhahq/scripts/main/agent/install.sh -o agent.sh && chmod +x agent.sh && \
+env NZ_SERVER=138.2.92.42:9981 NZ_TLS=false NZ_CLIENT_SECRET=RMw9rBte3K6MAALtanfPossnw1Z1RwKf ./agent.sh
 echo "🎉🎉🎉小鸡已上线🎉🎉🎉"
 
 # 安装 Docker
