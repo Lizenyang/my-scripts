@@ -60,6 +60,7 @@ docker run --log-opt max-size=10m --cap-add NET_ADMIN -d -p 4449:4449 --name mys
 
 ##### 执行 Proxyrack 命令
 # 生成设备ID
+echo "生成设备ID"
 device_id=$(cat /dev/urandom | LC_ALL=C tr -dc 'A-F0-9' | dd bs=1 count=64 2>/dev/null && echo)
 
 # 输出生成的设备ID
