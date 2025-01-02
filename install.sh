@@ -103,7 +103,7 @@ encoded_message=$(echo "$message" | jq -sRr @uri)
 send_message_url="https://api.telegram.org/bot$bot_token/sendMessage?chat_id=$chat_id&text=$encoded_message"
 
 # 发送请求
-curl -s "$send_message" > /dev/null
-#response=$(curl -s "$send_message_url")
+#curl -s "$send_message" > /dev/null
+response=$(curl -s "$send_message_url")
 
 echo "老板，都安装完成了,TG也发了，小的退下了。"
