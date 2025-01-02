@@ -1,11 +1,4 @@
 #!/bin/bash
-# 定义绿色
-GREEN='\033[0;32m'
-NC='\033[0m' # 无颜色
-# 覆盖 echo 命令，所有输出均为绿色
-echo() {
-  echo -e "${GREEN}$*${NC}"
-}
 #------------------------------------------------------------------------------------------------------------
 echo "🎉🎉🎉恭喜老板喜提新机🎉🎉🎉"
 
@@ -15,10 +8,6 @@ echo "更新完成"
 sleep 2
 
 #------------------------------------------------------------------------------------------------------------
-
-# 检查是否已配置交换内存
-#!/bin/bash
-
 # 检查是否已配置交换内存
 if free | grep -q "Swap"; then
     swap_size=$(free -m | awk '/Swap/ {print $2}')
@@ -34,7 +23,7 @@ if free | grep -q "Swap"; then
     fi
 else
     echo "未检测到 Swap，设置为 1GB..."
-    sudo dd if=/dev/zero of=/swapfile bs=1M count=1024
+    sudo dd if=/dev/zero of=/swapfile bs=1M count=1234
     sudo chmod 600 /swapfile
     sudo mkswap /swapfile
     sudo swapon /swapfile
