@@ -29,7 +29,8 @@ if grep -q "precedence ::ffff:0:0/96 100" /etc/gai.conf; then
     echo -e "${GREEN}IPv4 优先已设置，无需重复配置。${NC}"
 else
     echo -e "${GREEN}配置 IPv4 优先中...${NC}"
-    sudo sed -i '/^#precedence ::ffff:0:0\/96 100/s/^#//' /etc/gai.conf
+    #sudo sed -i '/^#precedence ::ffff:0:0\/96 100/s/^#//' /etc/gai.conf
+    sudo sed -i '/^#precedence ::ffff:0:0\/96/s/^#//' /etc/gai.conf
     echo -e "${GREEN}IPv4 优先设置完成。${NC}"
 fi
 
