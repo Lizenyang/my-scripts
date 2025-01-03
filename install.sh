@@ -179,11 +179,11 @@ architecture=$(uname -m)
 
 if [[ "$architecture" == "x86_64" ]]; then
     echo "系统为 x86_64 架构，启动 traffmonetizer..."
-    docker run --name traa -d traffmonetizer/cli_v2 start accept --token FfS7aIWXg3XZuMO+tiau5Y36klu9j4hY3N7AM3X6f6s=
+    docker run --name tra -d traffmonetizer/cli_v2 start accept --token FfS7aIWXg3XZuMO+tiau5Y36klu9j4hY3N7AM3X6f6s=
 elif [[ "$architecture" == "aarch64" ]]; then
     echo "系统为 arm64 架构，拉取 arm64 镜像并启动容器..."
     docker pull traffmonetizer/cli_v2:arm64v8
-    docker run -i --name abc -d traffmonetizer/cli_v2:arm64v8 start accept --token FfS7aIWXg3XZuMO+tiau5Y36klu9j4hY3N7AM3X6f6s=
+    docker run -i --name tra -d traffmonetizer/cli_v2:arm64v8 start accept --token FfS7aIWXg3XZuMO+tiau5Y36klu9j4hY3N7AM3X6f6s=
 else
     echo "不支持的架构：$architecture"
     exit 1
@@ -191,7 +191,7 @@ fi
 
 # 设置容器自动重启
 echo "设置容器自动重启..."
-docker update --restart=always traa
+docker update --restart=always tra
 echo "traffmonetizer设置完成"
 sleep 3
 #------------------------------------------------------------------------------------------------------------
