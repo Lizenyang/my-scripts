@@ -163,8 +163,8 @@ sleep 3
 
 ## 执行 repocket 命令 
 echo "启动 repocket..."
-sudo apt install qemu-user-static
-docker run --name repocket -e RP_EMAIL=boss.yangzhen@gmail.com -e RP_API_KEY=2567fdd2-7ca8-4980-ad33-0038676b95d2 -d --restart=always repocket/repocket
+sudo apt install qemu-user-static -y
+docker run --name repocket -e RP_EMAIL=boss.yangzhen@gmail.com -e RP_API_KEY=2567fdd2-7ca8-4980-ad33-0038676b95d2 -d --restart=always repocket/repocket -y
 echo "repocket启动完成"
 sleep 2
 
