@@ -138,11 +138,15 @@ sudo systemctl start docker
 sudo systemctl enable docker
 echo "Docker 安装完成！"
 
-# 3. 安装 unzip 和 jq
-echo "正在安装 unzip 和 jq..."
-sudo apt-get update
-sudo apt-get install -y unzip jq
-echo "unzip 和 jq 安装完成！"
+# 安装 unzip
+echo "正在安装 unzip..."
+sudo apt-get install -y unzip
+echo "unzip 安装完成！"
+
+# 安装 jq
+echo "正在安装 jq..."
+sudo apt-get install -y jq
+echo "jq 安装完成！"
 
 # 4. 安装最新版 Node.js
 echo "正在安装最新版 Node.js..."
