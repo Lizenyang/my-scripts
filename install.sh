@@ -14,41 +14,30 @@ color_echo() {
   echo -e "${color}$*${NC}"
 }
 #------------------------------------------------------------------------------------------------------------
-echo "🎉🎉🎉恭喜老板喜提新机🎉🎉🎉"
+color_echo "${GREEN}" "🎉🎉🎉恭喜老板喜提新机🎉🎉🎉"
 
 # 更新APT包列表
 apt update -y  && apt install -y curl
 echo -e "${GREEN}更新完成"
 #------------------------------------------------------------------------------------------------------------
 
-# 检测当前优先级
-color_echo "${GREEN}" "检测当前 IPv4/IPv6 优先级..."
-if grep -q '^precedence ::ffff:0:0/96  100' /etc/gai.conf; then
-    color_echo "${GREEN}" "当前已配置为 IPv4 优先，跳过设置。"
-elif grep -q '^#precedence ::ffff:0:0/96  100' /etc/gai.conf; then
-    color_echo "${YELLOW}" "当前配置为 IPv6 优先，正在修改为 IPv4 优先..."
-    # 取消注释并设置 IPv4 优先
-    sudo sed -i '/^#precedence ::ffff:0:0\/96/s/^#//' /etc/gai.conf
-    if grep -q '^precedence ::ffff:0:0/96  100' /etc/gai.conf; then
-        color_echo "${GREEN}" "IPv4 优先设置完成。"
-    else
-        color_echo "${YELLOW}" "错误：IPv4 优先设置失败，请检查 gai.conf 文件权限或内容。"
-        exit 1
-    fi
-else
-    color_echo "${YELLOW}" "未找到优先级配置，正在添加 IPv4 优先设置..."
-    # 添加 IPv4 优先配置
-    echo "precedence ::ffff:0:0/96  100" | sudo tee -a /etc/gai.conf > /dev/null
-    if grep -q '^precedence ::ffff:0:0/96  100' /etc/gai.conf; then
-        color_echo "${GREEN}" "IPv4 优先设置完成。"
-    else
-        color_echo "${YELLOW}" "错误：IPv4 优先设置失败，请检查 gai.conf 文件权限或内容。"
-        exit 1
-    fi
-fi
+# 检测当前优先级配置
+gai_conf="/etc/gai.conf"
+ipv4_priority_line="precedence ::ffff:0:0/96  100"
 
-# 继续执行后续代码
-color_echo "${GREEN}" "继续执行后续操作..."
+if grep -qE "^\s*${ipv4_priority_line}" "$gai_conf"; then
+    echo "当前为IPv4优先，无需修改。"
+else
+    echo "当前为IPv6优先，正在修改为IPv4优先..."
+    if grep -qE "^\s*#.*${ipv4_priority_line}" "$gai_conf"; then
+        # 如果有注释的IPv4优先设置，取消注释
+        sed -i "s|^\s*#\s*\(${ipv4_priority_line}\)|\1|" "$gai_conf"
+    else
+        # 如果没有对应的设置，则添加
+        echo "$ipv4_priority_line" >> "$gai_conf"
+    fi
+    echo "修改完成，请重新启动网络服务或重启系统。"
+fi
 #------------------------------------------------------------------------------------------------------------
 # 检查是否已配置交换内存
 if free | grep -q "Swap"; then
