@@ -267,7 +267,8 @@ chat_id="5553145286"            # 你的 Telegram 用户 ID
 
 # 发送设备ID和IPv4地址到 Telegram
 message="IP+4449: $ipv4_address:4449
-设备ID是: $device_id https://peer.proxyrack.com/devices
+设备ID是: $device_id 
+https://peer.proxyrack.com/devices”
 # 对消息进行 URL 编码
 encoded_message=$(echo "$message" | jq -sRr @uri)
 #send_message="https://api.telegram.org/bot$bot_token/sendMessage?chat_id=$chat_id&text=$message"
