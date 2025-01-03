@@ -74,9 +74,11 @@ free -h
 
 #------------------------------------------------------------------------------------------------------------
 echo "关闭不必要的防火墙规则..."
+systemctl stop firewalld.service
 sudo iptables -P INPUT ACCEPT
 sudo iptables -P FORWARD ACCEPT
 sudo iptables -P OUTPUT ACCEPT
+sudo iptables -F
 echo "防火墙规则已放宽，请注意安全风险！"
 sleep 2
 #------------------------------------------------------------------------------------------------------------
