@@ -25,7 +25,6 @@ echo -e "${GREEN}更新完成"
 color_echo "${GREEN}" "检测当前 IPv4/IPv6 优先级..."
 if grep -q '^precedence ::ffff:0:0/96  100' /etc/gai.conf; then
     color_echo "${GREEN}" "当前已配置为 IPv4 优先，跳过设置。"
-    exit 0
 elif grep -q '^#precedence ::ffff:0:0/96  100' /etc/gai.conf; then
     color_echo "${YELLOW}" "当前配置为 IPv6 优先，正在修改为 IPv4 优先..."
     # 取消注释并设置 IPv4 优先
@@ -48,10 +47,8 @@ else
     fi
 fi
 
-# 验证修改
-color_echo "${GREEN}" "验证 IPv4 优先设置..."
-ping -4 google.com -c 2
-ping -6 google.com -c 2
+# 继续执行后续代码
+color_echo "${GREEN}" "继续执行后续操作..."
 #------------------------------------------------------------------------------------------------------------
 # 检查是否已配置交换内存
 if free | grep -q "Swap"; then
