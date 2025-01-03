@@ -71,12 +71,47 @@ echo "当前 Swap 配置："
 free -h
 
 #------------------------------------------------------------------------------------------------------------
-echo "关闭不必要的防火墙规则..."
-systemctl stop firewalld.service
-sudo iptables -P INPUT ACCEPT
-sudo iptables -P FORWARD ACCEPT
-sudo iptables -P OUTPUT ACCEPT
-sudo iptables -F
+echo "启用防火墙，允许通过所有流量"
+
+# 启用 IPv4 数据包转发
+echo "启用 IPv4 数据包转发..."
+sysctl -w net.ipv4.ip_forward=1
+
+# 持久化配置
+echo "持久化 IPv4 数据包转发配置..."
+echo "net.ipv4.ip_forward=1" | sudo tee -a /etc/sysctl.conf > /dev/null
+sudo sysctl -p
+
+# 设置 iptables 默认策略
+echo "设置 iptables 默认策略为 ACCEPT..."
+iptables -P FORWARD ACCEPT
+iptables -P INPUT ACCEPT
+
+# 保存 iptables 规则
+echo "保存 iptables 规则..."
+iptables-save > /etc/iptables/rules.v4
+
+# 创建持久化服务
+echo "创建 iptables 持久化服务..."
+cat <<EOF | sudo tee /etc/systemd/system/iptables-restore.service > /dev/null
+[Unit]
+Description=Restore iptables rules
+After=network.target
+
+[Service]
+Type=oneshot
+ExecStart=/sbin/iptables-restore /etc/iptables/rules.v4
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+# 启用并启动服务
+echo "启用并启动 iptables 持久化服务..."
+sudo systemctl enable iptables-restore
+sudo systemctl start iptables-restore
+
+echo "配置完成！"
 echo "防火墙规则已放宽，请注意安全风险！"
 sleep 2
 #------------------------------------------------------------------------------------------------------------
@@ -206,7 +241,7 @@ echo "下载 Proxyrack 镜像"
 docker pull proxyrack/pop
 
 # 运行 Proxyrack 容器，并将生成的设备ID传递给UUID环境变量
-sudo docker run -d --name proxyrack --restart always -e UUID="echo "$device_id"" proxyrack/pop
+sudo docker run -d --name proxyrack --restart always -e UUID="$device_id" proxyrack/pop
 echo "Proxyrack container is running with UUID: $device_id"
 echo "Proxyrack启动完成"
 sleep 2
