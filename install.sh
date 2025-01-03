@@ -255,12 +255,6 @@ echo "Honeygain启动完成"
 sleep 2
 #------------------------------------------------------------------------------------------------------------
 
-####### 运行 EarnApp 安装脚本并提取 https:// 链接
-https_link=$(wget -qO- https://brightdata.com/static/earnapp/install.sh | sudo bash -s -- -y 2>&1 | grep -o 'https://[^ ]*')
-echo "EarnApp启动完成"
-sleep 2
-#------------------------------------------------------------------------------------------------------------
-
 # 获取公共IPv4地址
 ipv4_address=$(curl -s http://icanhazip.com)
 
