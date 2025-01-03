@@ -21,26 +21,37 @@ apt update -y  && apt install -y curl
 echo -e "${GREEN}更新完成"
 #------------------------------------------------------------------------------------------------------------
 
-# 输出绿色信息
-echo -e "${CYAN}正在设置 IPv4 优先...${NC}"
-
-# 检查并设置 sysctl 配置
-if grep -q "precedence ::ffff:0:0/96 100" /etc/gai.conf; then
-    echo -e "${GREEN}IPv4 优先已设置，无需重复配置。${NC}"
-else
-    echo -e "${GREEN}配置 IPv4 优先中...${NC}"
-    #sudo sed -i '/^#precedence ::ffff:0:0\/96 100/s/^#//' /etc/gai.conf
+# 检测当前优先级
+color_echo "${GREEN}" "检测当前 IPv4/IPv6 优先级..."
+if grep -q '^precedence ::ffff:0:0/96  100' /etc/gai.conf; then
+    color_echo "${GREEN}" "当前已配置为 IPv4 优先，跳过设置。"
+    exit 0
+elif grep -q '^#precedence ::ffff:0:0/96  100' /etc/gai.conf; then
+    color_echo "${YELLOW}" "当前配置为 IPv6 优先，正在修改为 IPv4 优先..."
+    # 取消注释并设置 IPv4 优先
     sudo sed -i '/^#precedence ::ffff:0:0\/96/s/^#//' /etc/gai.conf
-    echo -e "${GREEN}IPv4 优先设置完成。${NC}"
+    if grep -q '^precedence ::ffff:0:0/96  100' /etc/gai.conf; then
+        color_echo "${GREEN}" "IPv4 优先设置完成。"
+    else
+        color_echo "${YELLOW}" "错误：IPv4 优先设置失败，请检查 gai.conf 文件权限或内容。"
+        exit 1
+    fi
+else
+    color_echo "${YELLOW}" "未找到优先级配置，正在添加 IPv4 优先设置..."
+    # 添加 IPv4 优先配置
+    echo "precedence ::ffff:0:0/96  100" | sudo tee -a /etc/gai.conf > /dev/null
+    if grep -q '^precedence ::ffff:0:0/96  100' /etc/gai.conf; then
+        color_echo "${GREEN}" "IPv4 优先设置完成。"
+    else
+        color_echo "${YELLOW}" "错误：IPv4 优先设置失败，请检查 gai.conf 文件权限或内容。"
+        exit 1
+    fi
 fi
 
-# 检查是否成功修改
-if grep -q "precedence ::ffff:0:0/96 100" /etc/gai.conf; then
-    echo -e "${GREEN}验证成功：IPv4 优先已启用！${NC}"
-else
-    echo -e "${RED}错误：IPv4 优先设置失败，请检查 gai.conf 文件权限。${NC}"
-    exit 1
-fi
+# 验证修改
+color_echo "${GREEN}" "验证 IPv4 优先设置..."
+ping -4 google.com -c 2
+ping -6 google.com -c 2
 #------------------------------------------------------------------------------------------------------------
 # 检查是否已配置交换内存
 if free | grep -q "Swap"; then
