@@ -224,11 +224,11 @@ sleep 2
 #------------------------------------------------------------------------------------------------------------
 
 #### 执行 mystnodes 命令
-echo "启动 Mystnodes"
-docker pull mysteriumnetwork/myst && 
-docker run --log-opt max-size=10m --cap-add NET_ADMIN -d -p 4449:4449 --name mystnodes -v myst-data:/var/lib/mysterium-node --restart unless-stopped mysteriumnetwork/myst:latest service --agreed-terms-and-conditions
-echo "mystnodes启动完成"
-sleep 2
+#echo "启动 Mystnodes"
+#docker pull mysteriumnetwork/myst && 
+#docker run --log-opt max-size=10m --cap-add NET_ADMIN -d -p 4449:4449 --name mystnodes -v myst-data:/var/lib/mysterium-node --restart unless-stopped mysteriumnetwork/myst:latest service --agreed-terms-and-conditions
+#echo "mystnodes启动完成"
+#sleep 2
 #------------------------------------------------------------------------------------------------------------
 
 ##### 执行 Proxyrack 命令
@@ -249,10 +249,10 @@ sleep 2
 #------------------------------------------------------------------------------------------------------------
 ###### Honeygain
 #docker run honeygain/honeygain -tou-accept -email boss.yangzhen@gmail.com -pass honeygain@931101 -device $(hostname -I | awk '{print $1}')
-docker pull honeygain/honeygain
-docker run -d honeygain/honeygain -tou-accept -email boss.yangzhen@gmail.com -pass honeygain@931101 -device $(hostname -I | awk '{print $1}')
-echo "Honeygain启动完成"
-sleep 2
+#docker pull honeygain/honeygain
+#docker run -d honeygain/honeygain -tou-accept -email boss.yangzhen@gmail.com -pass honeygain@931101 -device $(hostname -I | awk '{print $1}')
+#echo "Honeygain启动完成"
+#sleep 2
 #------------------------------------------------------------------------------------------------------------
 
 # 获取公共IPv4地址
@@ -268,7 +268,6 @@ chat_id="5553145286"            # 你的 Telegram 用户 ID
 # 发送设备ID和IPv4地址到 Telegram
 message="IP+4449: $ipv4_address:4449
 设备ID是: $device_id https://peer.proxyrack.com/devices
-EarnApp 注册链接：$https_link"
 # 对消息进行 URL 编码
 encoded_message=$(echo "$message" | jq -sRr @uri)
 #send_message="https://api.telegram.org/bot$bot_token/sendMessage?chat_id=$chat_id&text=$message"
