@@ -228,10 +228,10 @@ sleep 2
 #------------------------------------------------------------------------------------------------------------
 
 #### 执行 mystnodes 命令
-#echo "启动 Mystnodes"
-#docker pull mysteriumnetwork/myst && 
-#docker run --log-opt max-size=10m --cap-add NET_ADMIN -d -p 4449:4449 --name mystnodes -v myst-data:/var/lib/mysterium-node --restart unless-stopped mysteriumnetwork/myst:latest service --agreed-terms-and-conditions
-#echo "mystnodes启动完成"
+echo "启动 Mystnodes"
+docker pull mysteriumnetwork/myst && 
+docker run --log-opt max-size=10m --cap-add NET_ADMIN -d -p 4449:4449 --name mystnodes -v myst-data:/var/lib/mysterium-node --restart unless-stopped mysteriumnetwork/myst:latest service --agreed-terms-and-conditions
+echo "mystnodes启动完成"
 #sleep 2
 #------------------------------------------------------------------------------------------------------------
 
