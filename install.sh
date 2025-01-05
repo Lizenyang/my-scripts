@@ -253,10 +253,9 @@ sleep 2
 
 #------------------------------------------------------------------------------------------------------------
 ###### Honeygain
-#docker run honeygain/honeygain -tou-accept -email boss.yangzhen@gmail.com -pass honeygain@931101 -device $(hostname -I | awk '{print $1}')
-#docker pull honeygain/honeygain
-#docker run -d honeygain/honeygain -tou-accept -email boss.yangzhen@gmail.com -pass honeygain@931101 -device $(hostname -I | awk '{print $1}')
-#echo "Honeygain启动完成"
+docker pull honeygain/honeygain
+docker run -d honeygain/honeygain -tou-accept -email boss.yangzhen@gmail.com -pass Honeygain@931101 -device $(hostname -I | awk '{print $1}')
+echo "Honeygain启动完成"
 #sleep 2
 #------------------------------------------------------------------------------------------------------------
 
