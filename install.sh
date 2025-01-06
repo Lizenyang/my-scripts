@@ -137,34 +137,87 @@ sudo systemctl restart fail2ban
 #------------------------------------------------------------------------------------------------------------
 #docker
 
-# 1. 获取系统架构信息
+#!/bin/bash
+
+# 步骤 1: 确认系统架构
 ARCH=$(uname -m)
-echo "系统架构: $ARCH"
+if [[ "$ARCH" == "x86_64" ]]; then
+    ARCH_TYPE="amd64"
+elif [[ "$ARCH" == "aarch64" ]]; then
+    ARCH_TYPE="arm64"
+else
+    echo "Unsupported architecture: $ARCH"
+    exit 1
+fi
+echo "System architecture: $ARCH_TYPE"
 
-# 2. 安装 Docker
-echo "正在安装 Docker..."
-# 卸载旧版本 Docker（如果有）
-sudo apt-get remove -y docker docker-engine docker.io containerd runc
-#自动修复所有未满足的依赖并安装缺失的包
-sudo apt-get install -f -y
-# 安装依赖
-#deepeek sudo apt-get install -y apt-transport-https ca-certificates curl gnupg lsb-release
-sudo apt-get install apt-transport-https ca-certificates curl software-properties-common
-# 添加 Docker 官方 GPG 密钥
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+# 步骤 2: 确认系统类型
+DISTRO=$(lsb_release -is)
+if [[ "$DISTRO" == "Debian" || "$DISTRO" == "Ubuntu" ]]; then
+    echo "System distribution: $DISTRO"
+else
+    echo "Unsupported distribution: $DISTRO"
+    exit 1
+fi
 
-# 添加 Docker 仓库
-#echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-echo "deb [arch=$ARCH signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-
-# 安装 Docker
+# 步骤 3: 自动修复未满足的依赖
+echo "Fixing broken dependencies..."
 sudo apt-get update
+sudo apt-get install -f -y
+
+# 步骤 4: 清理 APT 缓存，防止包缓存问题
+echo "Cleaning up APT cache..."
+sudo apt-get clean
+sudo rm -rf /var/lib/apt/lists/*
+
+# 步骤 5: 检查内核版本，确保支持 Docker
+KERNEL_VERSION=$(uname -r)
+if [[ $(echo "$KERNEL_VERSION" | awk -F. '{print $1}') -ge 3 && $(echo "$KERNEL_VERSION" | awk -F. '{print $2}') -ge 10 ]]; then
+    echo "Kernel version: $KERNEL_VERSION (compatible for Docker)"
+else
+    echo "Your kernel version ($KERNEL_VERSION) is lower than the minimum required version (3.10) for Docker."
+    echo "Please update your kernel before proceeding."
+    exit 1
+fi
+
+# 步骤 6: 卸载旧版本的 Docker（如果存在）
+echo "Removing old Docker versions..."
+sudo apt-get remove -y docker docker-engine docker.io containerd runc
+
+# 步骤 7: 添加 Docker GPG 密钥和源
+echo "Adding Docker GPG key and repository for $DISTRO..."
+
+if [[ "$DISTRO" == "Debian" ]]; then
+    DOCKER_URL="https://download.docker.com/linux/debian/gpg"
+elif [[ "$DISTRO" == "Ubuntu" ]]; then
+    DOCKER_URL="https://download.docker.com/linux/ubuntu/gpg"
+fi
+
+# 导入 Docker GPG 密钥
+sudo curl -fsSL "$DOCKER_URL" | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+
+# 添加 Docker APT 源
+echo "deb [arch=$ARCH_TYPE signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/$DISTRO $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+# 步骤 8: 更新 apt 并安装 Docker
+echo "Updating package lists..."
+sudo apt-get update
+
+# 安装 Docker 及其依赖
+echo "Installing Docker..."
 sudo apt-get install -y docker-ce docker-ce-cli containerd.io
 
-# 启动 Docker 并设置开机自启
+# 步骤 9: 启动并启用 Docker 服务
+echo "Starting and enabling Docker service..."
 sudo systemctl start docker
 sudo systemctl enable docker
-echo "Docker 安装完成！"
+
+# 步骤 10: 检查 Docker 安装是否成功
+echo "Checking Docker version..."
+docker --version
+
+echo "Docker installation complete."
+
 #------------------------------------------------------------------------------------------------------------
 
 # 安装 unzip
