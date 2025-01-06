@@ -136,6 +136,8 @@ sudo systemctl restart fail2ban
 
 #------------------------------------------------------------------------------------------------------------
 #docker
+#!/bin/bash
+
 # 步骤 1: 确认系统架构
 ARCH=$(uname -m)
 if [[ "$ARCH" == "x86_64" ]]; then
@@ -151,7 +153,7 @@ echo "系统架构: $ARCH_TYPE"
 # 步骤 2: 确认系统类型
 DISTRO=$(lsb_release -is)
 if [[ "$DISTRO" == "Debian" || "$DISTRO" == "Ubuntu" ]]; then
-    echo "系统类型: $DISTRO"
+    echo "系统发行版: $DISTRO"
 else
     echo "不支持的发行版: $DISTRO"
     exit 1
@@ -167,7 +169,7 @@ echo "正在清理 APT 缓存..."
 sudo apt-get clean
 sudo rm -rf /var/lib/apt/lists/*
 
-# 步骤 5: 获取当前内核版本
+# 步骤 5 获取当前内核版本
 KERNEL_VERSION=$(uname -r)
 
 # 使用 dpkg --compare-versions 来进行内核版本比较
@@ -175,10 +177,10 @@ REQUIRED_KERNEL="3.10"
 
 # 检查内核版本是否满足要求
 if dpkg --compare-versions "$KERNEL_VERSION" ge "$REQUIRED_KERNEL"; then
-    echo "当前内核版本: $KERNEL_VERSION (符合 Docker 的要求)"
+    echo "内核版本: $KERNEL_VERSION (符合 Docker 要求)"
 else
-    echo "您的内核版本 ($KERNEL_VERSION) 低于 Docker 所需的最低版本 ($REQUIRED_KERNEL)。"
-    echo "请更新内核后再继续安装。"
+    echo "您的内核版本 ($KERNEL_VERSION) 低于 Docker 最低要求的版本 ($REQUIRED_KERNEL)。"
+    echo "请更新您的内核后再继续安装。"
     exit 1
 fi
 
@@ -198,8 +200,14 @@ fi
 # 导入 Docker GPG 密钥
 sudo curl -fsSL "$DOCKER_URL" | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
 
-# 添加 Docker APT 源
+# 添加 Docker APT 源，并替换 "bookworm" 为 "bullseye"
 echo "deb [arch=$ARCH_TYPE signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/$DISTRO $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+# 如果系统是 Debian，且版本是 "bookworm"，则替换为 "bullseye"
+if [[ "$DISTRO" == "Debian" && $(lsb_release -cs) == "bookworm" ]]; then
+    echo "检测到 Debian bookworm，正在将源更新为 bullseye..."
+    sudo sed -i 's/bookworm/bullseye/g' /etc/apt/sources.list.d/docker.list
+fi
 
 # 步骤 8: 更新 apt 并安装 Docker
 echo "正在更新软件包列表..."
