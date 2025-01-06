@@ -139,101 +139,78 @@ sudo systemctl restart fail2ban
 #------------------------------------------------------------------------------------------------------------
 #docker
 
-# 步骤 1: 确认系统架构
+#!/bin/bash
+
+# 自动检测系统架构
 ARCH=$(uname -m)
-if [[ "$ARCH" == "x86_64" ]]; then
-    ARCH_TYPE="amd64"
-elif [[ "$ARCH" == "aarch64" ]]; then
-    ARCH_TYPE="arm64"
+if [ "$ARCH" == "x86_64" ]; then
+    ARCH="amd64"
+elif [ "$ARCH" == "aarch64" ]; then
+    ARCH="arm64"
 else
     echo "不支持的架构: $ARCH"
     exit 1
 fi
-echo "系统架构: $ARCH_TYPE"
 
-# 步骤 2: 确认系统类型
-DISTRO=$(lsb_release -is)
-if [[ "$DISTRO" == "Debian" || "$DISTRO" == "Ubuntu" ]]; then
-    echo "系统发行版: $DISTRO"
+# 自动检测系统类型
+if [ -f /etc/os-release ]; then
+    . /etc/os-release
+    OS=$ID
+    VERSION=$VERSION_ID
 else
-    echo "不支持的发行版: $DISTRO"
+    echo "不支持的操作系统"
     exit 1
 fi
 
-# 步骤 3: 自动修复未满足的依赖
-echo "正在修复未满足的依赖..."
-sudo apt-get update
-sudo apt-get install -f -y
-
-# 步骤 4: 清理 APT 缓存，防止包缓存问题
-echo "正在清理 APT 缓存..."
-sudo apt-get clean
-sudo rm -rf /var/lib/apt/lists/*
-
-# 步骤 5 获取当前内核版本
-KERNEL_VERSION=$(uname -r)
-
-# 使用 dpkg --compare-versions 来进行内核版本比较
-REQUIRED_KERNEL="3.10"
-
-# 检查内核版本是否满足要求
-if dpkg --compare-versions "$KERNEL_VERSION" ge "$REQUIRED_KERNEL"; then
-    echo "内核版本: $KERNEL_VERSION (符合 Docker 要求)"
+# 安装 Docker 依赖
+echo "正在安装依赖..."
+if [ "$OS" == "ubuntu" ] || [ "$OS" == "debian" ]; then
+    sudo apt-get update
+    sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
+elif [ "$OS" == "centos" ] || [ "$OS" == "rhel" ]; then
+    sudo yum install -y yum-utils device-mapper-persistent-data lvm2
 else
-    echo "您的内核版本 ($KERNEL_VERSION) 低于 Docker 最低要求的版本 ($REQUIRED_KERNEL)。"
-    echo "请更新您的内核后再继续安装。"
+    echo "不支持的操作系统: $OS"
     exit 1
 fi
 
-# 步骤 6: 卸载旧版本的 Docker（如果存在）
-echo "正在卸载旧版本的 Docker..."
-sudo apt-get remove -y docker docker-engine docker.io containerd runc
+# 添加 Docker 官方 GPG 密钥
+echo "正在添加 Docker 官方 GPG 密钥..."
+curl -fsSL https://download.docker.com/linux/$OS/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
 
-# 步骤 7: 添加 Docker GPG 密钥和源
-echo "正在为 $DISTRO 添加 Docker GPG 密钥和源..."
-
-if [[ "$DISTRO" == "Debian" ]]; then
-    DOCKER_URL="https://download.docker.com/linux/debian/gpg"
-elif [[ "$DISTRO" == "Ubuntu" ]]; then
-    DOCKER_URL="https://download.docker.com/linux/ubuntu/gpg"
+# 添加 Docker 仓库
+echo "正在添加 Docker 仓库..."
+if [ "$OS" == "ubuntu" ] || [ "$OS" == "debian" ]; then
+    echo "deb [arch=$ARCH signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/$OS $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+    sudo apt-get update
+elif [ "$OS" == "centos" ] || [ "$OS" == "rhel" ]; then
+    sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+else
+    echo "不支持的操作系统: $OS"
+    exit 1
 fi
 
-# 导入 Docker GPG 密钥
-sudo curl -fsSL "$DOCKER_URL" | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
-
-# 添加 Docker APT 源
-echo "deb [arch=$ARCH_TYPE signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/$DISTRO $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-
-# 如果系统是 Debian，且版本是 "bookworm"，则替换为 "bullseye"
-if [[ "$DISTRO" == "Debian" && $(lsb_release -cs) == "bookworm" ]]; then
-    echo "检测到 Debian bookworm，正在检查 Docker 仓库是否支持..."
-    if ! curl -fsSL https://download.docker.com/linux/debian/dists/bookworm/Release > /dev/null 2>&1; then
-        echo "Docker 官方仓库不支持 bookworm，正在将源更新为 bullseye..."
-        sudo sed -i 's/bookworm/bullseye/g' /etc/apt/sources.list.d/docker.list
-    else
-        echo "Docker 官方仓库已支持 bookworm，无需替换。"
-    fi
-fi
-
-# 步骤 8: 更新 apt 并安装 Docker
-echo "正在更新软件包列表..."
-sudo apt-get update
-
-# 安装 Docker 及其依赖
+# 安装 Docker
 echo "正在安装 Docker..."
-sudo apt-get install -y docker-ce docker-ce-cli containerd.io
+if [ "$OS" == "ubuntu" ] || [ "$OS" == "debian" ]; then
+    sudo apt-get install -y docker-ce docker-ce-cli containerd.io
+elif [ "$OS" == "centos" ] || [ "$OS" == "rhel" ]; then
+    sudo yum install -y docker-ce docker-ce-cli containerd.io
+else
+    echo "不支持的操作系统: $OS"
+    exit 1
+fi
 
-# 步骤 9: 启动并启用 Docker 服务
-echo "正在启动并启用 Docker 服务..."
+# 启动并启用 Docker 服务
+echo "正在启动并设置 Docker 服务开机自启..."
 sudo systemctl start docker
 sudo systemctl enable docker
 
-# 步骤 10: 检查 Docker 安装是否成功
-echo "正在检查 Docker 版本..."
-docker --version
+# 验证 Docker 安装
+echo "正在验证 Docker 安装..."
+sudo docker --version
 
-echo "Docker 安装完成。"
-
+echo "Docker 安装完成！"
 
 #------------------------------------------------------------------------------------------------------------
 
