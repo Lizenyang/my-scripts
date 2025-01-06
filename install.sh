@@ -97,8 +97,9 @@ sudo sysctl -p
 
 # 设置 iptables 默认策略
 echo "设置 iptables 默认策略为 ACCEPT..."
-iptables -P FORWARD ACCEPT
-iptables -P INPUT ACCEPT
+sudo iptables -P INPUT ACCEPT
+sudo iptables -P FORWARD ACCEPT
+sudo iptables -P OUTPUT ACCEPT
 
 # 保存 iptables 规则
 echo "保存 iptables 规则..."
