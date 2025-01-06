@@ -17,7 +17,8 @@ color_echo() {
 color_echo "${GREEN}" "🎉🎉🎉恭喜老板喜提新机🎉🎉🎉"
 
 # 更新APT包列表
-apt-get update
+sudo apt-get update
+
 echo -e "${GREEN}更新完成"
 #------------------------------------------------------------------------------------------------------------
 
@@ -145,15 +146,19 @@ echo "正在安装 Docker..."
 # 卸载旧版本 Docker（如果有）
 sudo apt-get remove -y docker docker-engine docker.io containerd runc
 # 安装依赖
-sudo apt-get update
-sudo apt-get install -y apt-transport-https ca-certificates curl gnupg lsb-release
+#deepeek sudo apt-get install -y apt-transport-https ca-certificates curl gnupg lsb-release
+sudo apt-get install apt-transport-https ca-certificates curl software-properties-common
 # 添加 Docker 官方 GPG 密钥
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+
 # 添加 Docker 仓库
-echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+#echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+echo "deb [arch=$ARCH signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
 # 安装 Docker
 sudo apt-get update
 sudo apt-get install -y docker-ce docker-ce-cli containerd.io
+
 # 启动 Docker 并设置开机自启
 sudo systemctl start docker
 sudo systemctl enable docker
