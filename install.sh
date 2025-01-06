@@ -17,13 +17,6 @@ color_echo() {
 color_echo "${GREEN}" "🎉🎉🎉恭喜老板喜提新机🎉🎉🎉"
 #------------------------------------------------------------------------------------------------------------
 # 更新ALL
-sudo rm /etc/apt/sources.list.d/docker.list
-echo "已删除旧docker list"
-# 添加 Debian Bullseye 的 Docker 仓库
-echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian bullseye stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-echo "已添加新docker list"
-sleep 5
-apt update -y  && apt install -y curl
 sudo apt-get update
 sudo apt update
 sudo apt upgrade -y
@@ -145,72 +138,8 @@ sudo systemctl restart fail2ban
 #------------------------------------------------------------------------------------------------------------
 #docker
 
-#!/bin/bash
-
-# 自动检测系统架构
-ARCH=$(uname -m)
-if [ "$ARCH" == "x86_64" ]; then
-    ARCH="amd64"
-elif [ "$ARCH" == "aarch64" ]; then
-    ARCH="arm64"
-else
-    echo "不支持的架构: $ARCH"
-    exit 1
-fi
-
-# 自动检测系统类型
-if [ -f /etc/os-release ]; then
-    . /etc/os-release
-    OS=$ID
-    VERSION=$VERSION_ID
-else
-    echo "不支持的操作系统"
-    exit 1
-fi
-
-# 安装 Docker 依赖
-echo "正在安装依赖..."
-if [ "$OS" == "ubuntu" ] || [ "$OS" == "debian" ]; then
-    sudo apt-get update
-    sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
-elif [ "$OS" == "centos" ] || [ "$OS" == "rhel" ]; then
-    sudo yum install -y yum-utils device-mapper-persistent-data lvm2
-else
-    echo "不支持的操作系统: $OS"
-    exit 1
-fi
-
-# 添加 Docker 官方 GPG 密钥
-echo "正在添加 Docker 官方 GPG 密钥..."
-curl -fsSL https://download.docker.com/linux/$OS/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
-
-# 添加 Docker 仓库
-echo "正在添加 Docker 仓库..."
-if [ "$OS" == "ubuntu" ] || [ "$OS" == "debian" ]; then
-    echo "deb [arch=$ARCH signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian bullseye stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-    sudo apt-get update
-elif [ "$OS" == "centos" ] || [ "$OS" == "rhel" ]; then
-    sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
-else
-    echo "不支持的操作系统: $OS"
-    exit 1
-fi
-
-# 安装 Docker
-echo "正在安装 Docker..."
-if [ "$OS" == "ubuntu" ] || [ "$OS" == "debian" ]; then
-    sudo apt-get install -y docker-ce docker-ce-cli containerd.io
-elif [ "$OS" == "centos" ] || [ "$OS" == "rhel" ]; then
-    sudo yum install -y docker-ce docker-ce-cli containerd.io
-else
-    echo "不支持的操作系统: $OS"
-    exit 1
-fi
-
-# 启动并启用 Docker 服务
-echo "正在启动并设置 Docker 服务开机自启..."
-sudo systemctl start docker
-sudo systemctl enable docker
+curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh get-docker.sh
 
 # 验证 Docker 安装
 echo "正在验证 Docker 安装..."
