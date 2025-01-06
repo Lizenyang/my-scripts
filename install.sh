@@ -135,7 +135,7 @@ EOL
 sudo systemctl restart fail2ban
 
 #------------------------------------------------------------------------------------------------------------
-
+#docker
 
 # 1. 获取系统架构信息
 ARCH=$(uname -m)
@@ -145,6 +145,8 @@ echo "系统架构: $ARCH"
 echo "正在安装 Docker..."
 # 卸载旧版本 Docker（如果有）
 sudo apt-get remove -y docker docker-engine docker.io containerd runc
+#自动修复所有未满足的依赖并安装缺失的包
+sudo apt-get install -f -y
 # 安装依赖
 #deepeek sudo apt-get install -y apt-transport-https ca-certificates curl gnupg lsb-release
 sudo apt-get install apt-transport-https ca-certificates curl software-properties-common
