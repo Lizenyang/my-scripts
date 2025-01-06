@@ -72,7 +72,10 @@ free -h
 
 #------------------------------------------------------------------------------------------------------------
 echo "启用防火墙，允许通过所有流量"
-
+#安装 iptables-persistent 包
+sudo apt-get install iptables-persistent
+#重启 iptables 服务
+sudo systemctl restart netfilter-persistent
 # 启用 IPv4 数据包转发
 echo "启用 IPv4 数据包转发..."
 sysctl -w net.ipv4.ip_forward=1
