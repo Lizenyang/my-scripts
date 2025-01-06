@@ -20,6 +20,7 @@ color_echo "${GREEN}" "🎉🎉🎉恭喜老板喜提新机🎉🎉🎉"
 sudo apt-get update
 sudo apt update
 sudo apt upgrade -y
+sudo apt autoremove
 echo -e "${GREEN}更新完成"
 #------------------------------------------------------------------------------------------------------------
 
