@@ -137,8 +137,6 @@ sudo systemctl restart fail2ban
 #------------------------------------------------------------------------------------------------------------
 #docker
 
-#!/bin/bash
-
 # 步骤 1: 确认系统架构
 ARCH=$(uname -m)
 if [[ "$ARCH" == "x86_64" ]]; then
@@ -170,12 +168,17 @@ echo "Cleaning up APT cache..."
 sudo apt-get clean
 sudo rm -rf /var/lib/apt/lists/*
 
-# 步骤 5: 检查内核版本，确保支持 Docker
+# 步骤 5获取当前内核版本
 KERNEL_VERSION=$(uname -r)
-if [[ $(echo "$KERNEL_VERSION" | awk -F. '{print $1}') -ge 3 && $(echo "$KERNEL_VERSION" | awk -F. '{print $2}') -ge 10 ]]; then
+
+# 使用 dpkg --compare-versions 来进行内核版本比较
+REQUIRED_KERNEL="3.10"
+
+# 检查内核版本是否满足要求
+if dpkg --compare-versions "$KERNEL_VERSION" ge "$REQUIRED_KERNEL"; then
     echo "Kernel version: $KERNEL_VERSION (compatible for Docker)"
 else
-    echo "Your kernel version ($KERNEL_VERSION) is lower than the minimum required version (3.10) for Docker."
+    echo "Your kernel version ($KERNEL_VERSION) is lower than the minimum required version ($REQUIRED_KERNEL) for Docker."
     echo "Please update your kernel before proceeding."
     exit 1
 fi
