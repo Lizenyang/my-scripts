@@ -15,10 +15,12 @@ color_echo() {
 }
 #------------------------------------------------------------------------------------------------------------
 color_echo "${GREEN}" "🎉🎉🎉恭喜老板喜提新机🎉🎉🎉"
-
-# 更新APT包列表
+#------------------------------------------------------------------------------------------------------------
+# 更新ALL
+apt update -y  && apt install -y curl
 sudo apt-get update
-
+sudo apt update
+sudo apt upgrade -y
 echo -e "${GREEN}更新完成"
 #------------------------------------------------------------------------------------------------------------
 
@@ -136,7 +138,6 @@ sudo systemctl restart fail2ban
 
 #------------------------------------------------------------------------------------------------------------
 #docker
-#!/bin/bash
 
 # 步骤 1: 确认系统架构
 ARCH=$(uname -m)
@@ -309,7 +310,7 @@ echo "设置 repocket 容器自动重启..."
 docker update --restart=always repocket
 #------------------------------------------------------------------------------------------------------------
 
-## 执行 earnfm 命令 
+## 执行 Earnfm 命令 
 echo "启动 earnfm..."
 sudo docker stop watchtower; sudo docker rm watchtower; sudo docker rmi containrrr/watchtower; sudo docker stop earnfm-client; sudo docker rm earnfm-client; sudo docker rmi earnfm/earnfm-client:latest; sudo docker run -d --restart=always -e EARNFM_TOKEN="b0698014-763d-41e1-9b99-c891114ad549" --name earnfm-client earnfm/earnfm-client:latest && sudo docker run -d --restart=always --name watchtower -v /var/run/docker.sock:/var/run/docker.sock containrrr/watchtower --cleanup --include-stopped --include-restarting --revive-stopped --interval 60 earnfm-client
 echo "earnfm启动完成"
@@ -325,7 +326,7 @@ echo "PacketStream启动完成"
 sleep 2
 #------------------------------------------------------------------------------------------------------------
 
-#### 执行 mystnodes 命令
+#### 执行 Mystnodes 命令
 echo "启动 Mystnodes"
 docker pull mysteriumnetwork/myst && 
 docker run --log-opt max-size=10m --cap-add NET_ADMIN -d -p 4449:4449 --name mystnodes -v myst-data:/var/lib/mysterium-node --restart unless-stopped mysteriumnetwork/myst:latest service --agreed-terms-and-conditions
@@ -350,9 +351,9 @@ sleep 2
 
 #------------------------------------------------------------------------------------------------------------
 ###### Honeygain
-docker pull honeygain/honeygain
-docker run -d honeygain/honeygain -tou-accept -email boss.yangzhen@gmail.com -pass Honeygain@931101 -device $(hostname -I | awk '{print $1}')
-echo "Honeygain启动完成"
+#docker pull honeygain/honeygain
+#docker run -d honeygain/honeygain -tou-accept -email boss.yangzhen@gmail.com -pass Honeygain@931101 -device $(hostname -I | awk '{print $1}')
+#echo "Honeygain启动完成"
 #sleep 2
 #------------------------------------------------------------------------------------------------------------
 
