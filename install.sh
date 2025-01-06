@@ -17,6 +17,9 @@ color_echo() {
 color_echo "${GREEN}" "🎉🎉🎉恭喜老板喜提新机🎉🎉🎉"
 #------------------------------------------------------------------------------------------------------------
 # 更新ALL
+sudo rm /etc/apt/sources.list.d/docker.list
+# 添加 Debian Bullseye 的 Docker 仓库
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian bullseye stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 apt update -y  && apt install -y curl
 sudo apt-get update
 sudo apt update
