@@ -115,6 +115,24 @@ echo "配置完成！"
 echo "防火墙规则已放宽，请注意安全风险！"
 sleep 2
 #------------------------------------------------------------------------------------------------------------
+#安装 fail2ban
+sudo apt-get install fail2ban
+#编辑 fail2ban 配置
+sudo tee -a /etc/fail2ban/jail.local > /dev/null <<EOL
+[sshd]
+enabled = true
+port    = ssh
+logpath = /var/log/auth.log
+maxretry = 3
+bantime = -1  # 永久封禁
+findtime = 600 # 在 10 分钟内
+EOL
+#重启 fail2ban 服务
+sudo systemctl restart fail2ban
+
+#------------------------------------------------------------------------------------------------------------
+
+
 # 1. 获取系统架构信息
 ARCH=$(uname -m)
 echo "系统架构: $ARCH"
@@ -137,16 +155,19 @@ sudo apt-get install -y docker-ce docker-ce-cli containerd.io
 sudo systemctl start docker
 sudo systemctl enable docker
 echo "Docker 安装完成！"
+#------------------------------------------------------------------------------------------------------------
 
 # 安装 unzip
 echo "正在安装 unzip..."
 sudo apt-get install -y unzip
 echo "unzip 安装完成！"
+#------------------------------------------------------------------------------------------------------------
 
 # 安装 jq
 echo "正在安装 jq..."
 sudo apt-get install -y jq
 echo "jq 安装完成！"
+#------------------------------------------------------------------------------------------------------------
 
 # 4. 安装最新版 Node.js
 echo "正在安装最新版 Node.js..."
@@ -155,6 +176,7 @@ curl -fsSL https://deb.nodesource.com/setup_current.x | sudo -E bash -
 # 安装 Node.js
 sudo apt-get install -y nodejs
 echo "Node.js 安装完成！"
+#------------------------------------------------------------------------------------------------------------
 
 # 5. 判断系统是否为 ARM64 并安装 qemu-user-static
 if [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ]; then
@@ -164,6 +186,7 @@ if [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ]; then
 else
     echo "系统不是 ARM64 架构，跳过 qemu-user-static 安装。"
 fi
+#------------------------------------------------------------------------------------------------------------
 
 # 6. 验证安装
 echo "正在验证安装..."
@@ -272,6 +295,8 @@ chat_id="5553145286"            # 你的 Telegram 用户 ID
 # 发送设备ID和IPv4地址到 Telegram
 message="IP+4449: $ipv4_address:4449
 设备ID是: $device_id https://peer.proxyrack.com/devices"
+#------------------------------------------------------------------------------------------------------------
+
 # 对消息进行 URL 编码
 encoded_message=$(echo "$message" | jq -sRr @uri)
 #send_message="https://api.telegram.org/bot$bot_token/sendMessage?chat_id=$chat_id&text=$message"
