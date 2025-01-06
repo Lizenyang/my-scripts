@@ -201,13 +201,18 @@ fi
 # 导入 Docker GPG 密钥
 sudo curl -fsSL "$DOCKER_URL" | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
 
-# 添加 Docker APT 源，并替换 "bookworm" 为 "bullseye"
+# 添加 Docker APT 源
 echo "deb [arch=$ARCH_TYPE signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/$DISTRO $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 
 # 如果系统是 Debian，且版本是 "bookworm"，则替换为 "bullseye"
 if [[ "$DISTRO" == "Debian" && $(lsb_release -cs) == "bookworm" ]]; then
-    echo "检测到 Debian bookworm，正在将源更新为 bullseye..."
-    sudo sed -i 's/bookworm/bullseye/g' /etc/apt/sources.list.d/docker.list
+    echo "检测到 Debian bookworm，正在检查 Docker 仓库是否支持..."
+    if ! curl -fsSL https://download.docker.com/linux/debian/dists/bookworm/Release > /dev/null 2>&1; then
+        echo "Docker 官方仓库不支持 bookworm，正在将源更新为 bullseye..."
+        sudo sed -i 's/bookworm/bullseye/g' /etc/apt/sources.list.d/docker.list
+    else
+        echo "Docker 官方仓库已支持 bookworm，无需替换。"
+    fi
 fi
 
 # 步骤 8: 更新 apt 并安装 Docker
