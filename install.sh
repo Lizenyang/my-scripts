@@ -181,7 +181,7 @@ curl -fsSL https://download.docker.com/linux/$OS/gpg | sudo gpg --dearmor -o /us
 # 添加 Docker 仓库
 echo "正在添加 Docker 仓库..."
 if [ "$OS" == "ubuntu" ] || [ "$OS" == "debian" ]; then
-    echo "deb [arch=$ARCH signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/$OS $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+    echo "deb [arch=$ARCH signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian bullseye stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
     sudo apt-get update
 elif [ "$OS" == "centos" ] || [ "$OS" == "rhel" ]; then
     sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
