@@ -23,10 +23,10 @@ apt update -y  && apt install -y curl
 sudo rm /etc/apt/sources.list.d/docker.list
 # 添加 Debian Bullseye 的 Docker 仓库
 echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian bullseye stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-sudo apt-get update
-sudo apt update
+sudo apt-get update -y
+sudo apt update -y
 sudo apt upgrade -y
-sudo apt autoremove
+sudo apt autoremove -y
 echo -e "${GREEN}更新完成"
 #------------------------------------------------------------------------------------------------------------
 
@@ -82,7 +82,8 @@ free -h
 #------------------------------------------------------------------------------------------------------------
 echo "启用防火墙，允许通过所有流量"
 #安装 iptables-persistent 包
-sudo apt-get install iptables-persistent
+#sudo apt-get install iptables-persistent
+sudo apt-get install -y iptables-persistent
 #重启 iptables 服务
 sudo systemctl restart netfilter-persistent
 # 启用 IPv4 数据包转发
@@ -128,7 +129,7 @@ echo "防火墙规则已放宽，请注意安全风险！"
 sleep 2
 #------------------------------------------------------------------------------------------------------------
 #安装 fail2ban
-sudo apt-get install fail2ban
+sudo apt-get install -y fail2ban
 #编辑 fail2ban 配置
 sudo tee -a /etc/fail2ban/jail.local > /dev/null <<EOL
 [sshd]
@@ -146,7 +147,7 @@ sudo systemctl restart fail2ban
 #docker
 
 curl -fsSL https://get.docker.com -o get-docker.sh
-sudo sh get-docker.sh
+yes | sudo sh get-docker.sh
 
 # 验证 Docker 安装
 echo "正在验证 Docker 安装..."
