@@ -77,7 +77,6 @@ free -h
 #------------------------------------------------------------------------------------------------------------
 
 #关闭甲骨文防火墙
-systemctl stop firewalld.service
 sudo iptables -P INPUT ACCEPT
 sudo iptables -P FORWARD ACCEPT
 sudo iptables -P OUTPUT ACCEPT
