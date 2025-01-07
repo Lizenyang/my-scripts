@@ -2,9 +2,9 @@
 
 # 定义脚本列表
 SCRIPTS=(
-    "https://raw.githubusercontent.com/Lizenyang/my-scripts/main/install.sh && chmod +x install.sh && ./install.sh"
-    "https://raw.githubusercontent.com/Lizenyang/my-scripts/main/fail2ban.sh && chmod +x fail2ban.sh && ./fail2ban.sh"
-    "https://raw.githubusercontent.com/Lizenyang/my-scripts/main/fail2ban.sh && chmod +x fail2ban.sh && ./fail2ban.sh"
+     "一键流量|https://raw.githubusercontent.com/Lizenyang/my-scripts/main/install.sh && chmod +x install.sh && ./install.sh"
+    "禁SSH爆破丨https://raw.githubusercontent.com/Lizenyang/my-scripts/main/fail2ban.sh && chmod +x fail2ban.sh && ./fail2ban.sh"
+    "测试丨https://raw.githubusercontent.com/Lizenyang/my-scripts/main/fail2ban.sh && chmod +x fail2ban.sh && ./fail2ban.sh"
 )
 
 # 显示菜单
