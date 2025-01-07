@@ -84,32 +84,43 @@ sudo iptables -F
 
 #------------------------------------------------------------------------------------------------------------
 # 安装 Fail2Ban
+
 # 检查系统类型
 if [ -f /etc/os-release ]; then
     . /etc/os-release
     OS=$NAME
     VER=$VERSION_ID
 else
-    echo "无法确定操作系统类型。"
+    echo "无法确定操作系统类型，继续执行..."
+fi
+
+# 更新包列表
+echo "更新包列表..."
+if [[ "$OS" == "Ubuntu" || "$OS" == "Debian" ]]; then
+    sudo apt-get update || echo "更新包列表失败，继续执行..."
+elif [[ "$OS" == "CentOS Linux" || "$OS" == "Red Hat Enterprise Linux" ]]; then
+    sudo yum update -y || echo "更新包列表失败，继续执行..."
+else
+    echo "不支持的操作系统，继续执行..."
 fi
 
 # 安装 Fail2Ban
 echo "安装 Fail2Ban..."
 if [[ "$OS" == "Ubuntu" || "$OS" == "Debian" ]]; then
-    sudo apt-get install -y fail2ban || { echo "安装 Fail2Ban 失败。"; exit 1; }
+    sudo apt-get install -y fail2ban || echo "安装 Fail2Ban 失败，继续执行..."
 elif [[ "$OS" == "CentOS Linux" || "$OS" == "Red Hat Enterprise Linux" ]]; then
-    sudo yum install -y epel-release
-    sudo yum install -y fail2ban || { echo "安装 Fail2Ban 失败。"; exit 1; }
+    sudo yum install -y epel-release || echo "安装 EPEL 仓库失败，继续执行..."
+    sudo yum install -y fail2ban || echo "安装 Fail2Ban 失败，继续执行..."
 fi
 
 # 启动并启用 Fail2Ban 服务
 echo "启动并启用 Fail2Ban 服务..."
-sudo systemctl enable fail2ban || { echo "启用 Fail2Ban 服务失败。"; exit 1; }
-sudo systemctl start fail2ban || { echo "启动 Fail2Ban 服务失败。"; exit 1; }
+sudo systemctl enable fail2ban || echo "启用 Fail2Ban 服务失败，继续执行..."
+sudo systemctl start fail2ban || echo "启动 Fail2Ban 服务失败，继续执行..."
 
 # 备份原始配置文件
 echo "备份原始配置文件..."
-sudo cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.conf.bak
+sudo cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.conf.bak || echo "备份配置文件失败，继续执行..."
 
 # 配置 Fail2Ban
 echo "配置 Fail2Ban..."
@@ -120,14 +131,15 @@ port = ssh
 filter = sshd
 logpath = /var/log/auth.log
 maxretry = 3
-bantime = -1
 EOF
 
 # 重启 Fail2Ban 服务以应用配置
 echo "重启 Fail2Ban 服务以应用配置..."
-sudo systemctl restart fail2ban || { echo "重启 Fail2Ban 服务失败。"; exit 1; }
+sudo systemctl restart fail2ban || echo "重启 Fail2Ban 服务失败，继续执行..."
 
 echo "配置完成。"
+
+
 
 #------------------------------------------------------------------------------------------------------------
 #docker
