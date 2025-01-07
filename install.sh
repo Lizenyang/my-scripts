@@ -84,6 +84,7 @@ sudo iptables -P OUTPUT ACCEPT
 sudo iptables -F
 
 #------------------------------------------------------------------------------------------------------------
+# 安装 Fail2Ban
 # 检查系统类型
 if [ -f /etc/os-release ]; then
     . /etc/os-release
