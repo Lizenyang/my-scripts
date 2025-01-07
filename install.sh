@@ -132,6 +132,7 @@ port = ssh
 filter = sshd
 logpath = /var/log/auth.log
 maxretry = 3
+bantime = -1
 EOF
 
 # 重启 Fail2Ban 服务以应用配置
