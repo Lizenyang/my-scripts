@@ -92,7 +92,6 @@ if [ -f /etc/os-release ]; then
     VER=$VERSION_ID
 else
     echo "无法确定操作系统类型。"
-    exit 1
 fi
 
 # 更新包列表
@@ -103,7 +102,6 @@ elif [[ "$OS" == "CentOS Linux" || "$OS" == "Red Hat Enterprise Linux" ]]; then
     sudo yum update -y || { echo "更新包列表失败。"; exit 1; }
 else
     echo "不支持的操作系统。"
-    exit 1
 fi
 
 # 安装 Fail2Ban
