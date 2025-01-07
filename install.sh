@@ -18,6 +18,7 @@ color_echo "${GREEN}" "🎉🎉🎉恭喜老板喜提新机🎉🎉🎉"
 #------------------------------------------------------------------------------------------------------------
 # 更新ALL
 # curl 安装
+apt install -y sudo
 apt update -y  && apt install -y curl
 sudo apt-get update -y
 sudo apt update -y
