@@ -2,7 +2,7 @@
 
 # 定义脚本列表
 SCRIPTS=(
-    "https://raw.githubusercontent.com/Lizenyang/my-scripts/main/fail2ban.sh && chmod +x fail2ban.sh && ./fail2ban.sh"
+    "https://raw.githubusercontent.com/Lizenyang/my-scripts/main/install.sh && chmod +x install.sh && ./install.sh"
     "https://raw.githubusercontent.com/Lizenyang/my-scripts/main/fail2ban.sh && chmod +x fail2ban.sh && ./fail2ban.sh"
     "https://raw.githubusercontent.com/Lizenyang/my-scripts/main/fail2ban.sh && chmod +x fail2ban.sh && ./fail2ban.sh"
 )
