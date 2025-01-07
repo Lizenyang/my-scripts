@@ -94,16 +94,6 @@ else
     echo "无法确定操作系统类型。"
 fi
 
-# 更新包列表
-echo "更新包列表..."
-if [[ "$OS" == "Ubuntu" || "$OS" == "Debian" ]]; then
-    sudo apt-get update || { echo "更新包列表失败。"; exit 1; }
-elif [[ "$OS" == "CentOS Linux" || "$OS" == "Red Hat Enterprise Linux" ]]; then
-    sudo yum update -y || { echo "更新包列表失败。"; exit 1; }
-else
-    echo "不支持的操作系统。"
-fi
-
 # 安装 Fail2Ban
 echo "安装 Fail2Ban..."
 if [[ "$OS" == "Ubuntu" || "$OS" == "Debian" ]]; then
