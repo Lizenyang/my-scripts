@@ -131,7 +131,8 @@ enabled = true
 port = ssh
 filter = sshd
 logpath = /var/log/auth.log
-maxretry = 3
+findtime = 600
+maxretry = 10
 bantime = -1
 EOF
 
